@@ -1,50 +1,62 @@
-# huaweicloud
-华为云空间云盘同步备份工具
+# 华为云盘同步工具
 
-## 介绍
-开发初衷：华为云空间云盘目前只有官方客户端，PC和安卓版本，而我的数据存在群晖NAS上，想自动备份的华为云盘就开发了这个客户端
-适用于NAS、linux、mac、pc等多平台
+华为云空间云盘双向同步工具，提供 **macOS 桌面应用**（Electron）和 **命令行版本**（h.js）。
 
-## 使用方法
-1.安装node.js https://nodejs.org/en/
+## macOS 桌面应用
 
-2.下载本程序h.js 和 package.json 到本地
+### 使用方法
 
-3.在程序所在文件夹中打开命令行执行 npm install 安装需要用到的模块
+```bash
+npm install
+npm start
+# 或双击 start.sh
+```
 
-4.打开h.js进行配置
-````
-const MY_APP_NAME = 'BREAD-NAS';//网盘文件夹的名称
+### 操作步骤
 
-const MY_APP_LOCAL = "e:\\hiHuaweiCloud";//本地网盘文件夹路径 ** 如果文件同步后再次改路径请删除h.js同目录下的.h.db数据库，否则导致文件被删除 **
-````
-5.运行node h.js即可在华为云盘根目录新建MY_APP_NAME文件夹，并与本地MY_APP_LOCAL文件夹中的文件进行双向同步
+1. **选择本地目录** — 点击「选择目录」，设置 Mac 上的同步文件夹
+2. **登录华为云盘** — 点击「获取授权链接」→ 在浏览器中打开 → 登录华为账号 → 授权后复制地址栏中的完整 URL → 粘贴回应用 → 提交
+3. **选择同步文件夹** — 点击「📂 浏览云盘」，勾选云盘根目录下需要同步的文件夹（可进入子目录浏览）
+4. **开始同步** — 点击「开始同步」，应用会自动双向同步选中的文件夹
 
-6.第一次运行后会显示一个URL，请复制粘贴到浏览器运行，获取云盘授权
+### 打包
 
-7.授权后会跳转到github项目页面，复制整个url到命令行粘贴，url里面含有授权码
+```bash
+npm run build   # 生成 .dmg 安装包
+```
 
-8.运行后系统开始云盘和本地文件夹同步，同步完毕后程序自动退出，下次需要同步则再次运行
+### 数据存储
 
+| 数据 | 位置 |
+|------|------|
+| 配置 | `~/.huaweicloud-sync/config.json` |
+| Token | `~/.huaweicloud-sync/access_token.json` |
+| 数据库 | `~/.huaweicloud-sync/sync.db` |
 
-## 各文件状态对应的同步操作
-1. 本地有，云盘无，【上传到云盘】
-2. 本地无，云盘有，【下载到本地】
-3. 本地删除，云盘有，【删除云盘文件】
-4. 本地有，云盘删除，【删除本地文件】`当一个文件在本地有而云盘没有的时候，如何判断要删除还是上传，
-主要看本地数据库是否有对应记录和最后同步时间，如本地文件fileA，在数据库有最后同步记录，而现在程序运行比较后发现云盘没有了，则表示需要删除本地文件
-`
-5. 本地修改，云盘未改，【上传到云盘】
-6. 本地未改，云盘修改，【下载到本地】
-7. 本地改名，云盘未改，【更新云盘文件名】todo: 程序遇到改名问题识别为本地缺少文件（夹）和新增文件（夹），导致变成两份，待优化
-7. 本地未改，云盘改名，【更新本地文件名】
+## 命令行版本
 
+原始 CLI 工具 `h.js`，适用于 NAS、Linux、无 GUI 环境。
+
+```bash
+npm install
+node h.js
+```
+
+首次运行按提示粘贴授权 URL，后续运行自动刷新 token。
+
+## 同步机制
+
+双向同步，以云端编辑时间和本地同步时间判断冲突：
+
+| 云端 | 本地 | 条件 | 操作 |
+|------|------|------|------|
+| 有 | 有 | 云端更新 且 hash 不同 | 下载（云→地） |
+| 有 | 有 | 尺寸/hash 不同 | 上传（地→云） |
+| 有 | 无 | 之前同步过（本地被删） | 删除云端 |
+| 有 | 无 | 未同步过 | 下载（云→地） |
+| 无 | 有 | — | 上传（地→云） |
 
 ## 参考文档
-https://developer.huawei.com/consumer/cn/doc/development/HMSCore-Guides/web-get-access-token-0000001050048946
 
-https://developer.huawei.com/consumer/cn/doc/development/HMSCore-Guides/server-dev-process-0000001064314366
-
-https://developer.huawei.com/consumer/cn/doc/development/HMSCore-Guides/server-managing-and-searching-0000001064818926#section775911189449
-
-https://developer.huawei.com/consumer/cn/doc/development/HMSCore-References/server-api-fileslist-0000001050153649
+- [华为 OAuth 授权](https://developer.huawei.com/consumer/cn/doc/development/HMSCore-Guides/web-get-access-token-0000001050048946)
+- [华为云盘 API](https://developer.huawei.com/consumer/cn/doc/development/HMSCore-Guides/server-dev-process-0000001064314366)
