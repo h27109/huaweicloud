@@ -18,7 +18,7 @@ const DEFAULT_CONFIG = {
   syncFolders: [],
   clientId: '105816847',
   clientSecret: '9dbef5edebd2dfec86700bc27ae606039d5d8cfe08a0206a48f05159d738a386',
-  concurrency: 6
+  concurrency: 10
 };
 
 /**

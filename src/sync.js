@@ -509,9 +509,14 @@ class SyncEngine {
   }
 
   /**
-   * 计算文件 SHA256
+   * 计算文件 SHA256（流式读取，大文件不阻塞内存）
    */
   _hash256(filePath) {
+    const stat = fs.statSync(filePath);
+    // 超过 100MB 的文件跳过 hash，用 大小+修改时间 代替比较
+    if (stat.size > 100 * 1024 * 1024) {
+      return 'bigfile:' + stat.size + ':' + Math.floor(stat.mtimeMs);
+    }
     const buffer = fs.readFileSync(filePath);
     const hash = crypto.createHash('sha256');
     hash.update(buffer);
