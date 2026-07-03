@@ -103,3 +103,16 @@ dist
 # TernJS port file
 .tern-port
 .idea
+
+# 华为云同步工具运行时文件(ACCESS_TOKEN.DATA 含授权 token, 切勿提交)
+ACCESS_TOKEN.DATA
+.h.db
+
+# Electron 打包输出
+dist/
+out/
+
+# macOS
+.DS_Store
+Thumbs.db
+.npmrc

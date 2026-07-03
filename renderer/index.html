@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self'">
+  <title>华为云盘同步工具</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app-container">
+    <!-- 标题栏 -->
+    <header class="toolbar">
+      <h1>☁️ 华为云盘同步工具</h1>
+      <span id="syncStatus" class="sync-badge idle">就绪</span>
+    </header>
+
+    <main class="main-content">
+      <!-- 配置区域 -->
+      <section class="card">
+        <h2>📁 本地同步目录</h2>
+        <div class="input-row">
+          <input type="text" id="localRoot" placeholder="选择本地同步目录..." readonly>
+          <button id="btnBrowse" class="btn btn-secondary">选择目录</button>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>☁️ 云盘同步文件夹</h2>
+        <div id="cloudFolderHint" class="hint" style="margin-bottom: 10px;">登录后可浏览云盘文件夹并选择要同步的内容</div>
+
+        <!-- 浏览云盘按钮 -->
+        <div class="btn-row" style="margin-bottom: 12px;">
+          <button id="btnBrowseCloud" class="btn btn-primary" disabled>📂 浏览云盘</button>
+          <button id="btnRefreshCloud" class="btn btn-secondary hidden">🔄 刷新</button>
+        </div>
+
+        <!-- 云盘文件夹列表（勾选） -->
+        <div id="cloudFolderList" class="cloud-folder-list hidden">
+          <div class="cloud-folder-header">
+            <span class="breadcrumb" id="cloudBreadcrumb">📁 根目录</span>
+          </div>
+          <div id="cloudItems" class="cloud-items">
+            <!-- 动态填充 -->
+          </div>
+        </div>
+
+        <!-- 已选择的同步文件夹 -->
+        <div id="selectedFolders" class="selected-folders">
+          <p class="hint" id="selectedHint">尚未选择同步文件夹</p>
+          <div id="folderTags" class="folder-list"></div>
+        </div>
+      </section>
+
+
+      <!-- 账户信息 -->
+      <section class="card">
+        <h2>🔐 登录华为云盘</h2>
+        <div id="authStatus" class="auth-panel">
+          <span class="status-dot offline"></span>
+          <span>未登录</span>
+        </div>
+        <div id="accountInfo" class="account-info hidden">
+          <span id="userName"></span>
+          <span id="storageInfo"></span>
+        </div>
+
+        <!-- 步骤1: 获取授权链接 -->
+        <div class="auth-steps">
+          <p class="step-label">第1步：获取授权链接，在浏览器中打开并登录</p>
+          <button id="btnGetAuthUrl" class="btn btn-primary">获取授权链接</button>
+          <div id="authUrlArea" class="hidden" style="margin-top: 10px;">
+            <p class="hint">请复制以下链接在浏览器中打开：</p>
+            <textarea id="authUrlText" class="url-display" readonly rows="2"></textarea>
+            <button id="btnCopyUrl" class="btn btn-secondary" style="margin-top: 6px;">复制链接</button>
+            <button id="btnOpenUrl" class="btn btn-secondary" style="margin-top: 6px;">在浏览器中打开</button>
+          </div>
+
+          <p class="step-label" style="margin-top: 16px;">第2步：登录成功后，复制浏览器地址栏中的完整 URL，粘贴到下方</p>
+          <div class="input-row">
+            <input type="text" id="redirectUrl" placeholder="粘贴授权回调 URL（含 ?code=...）">
+            <button id="btnSubmitUrl" class="btn btn-primary">提交</button>
+          </div>
+          <p class="hint">授权后浏览器会跳转到 GitHub 页面，地址栏 URL 中包含 code 参数</p>
+        </div>
+      </section>
+
+      <!-- 同步操作 -->
+      <section class="card">
+        <h2>🔄 同步操作</h2>
+        <div class="btn-row">
+          <button id="btnSync" class="btn btn-primary btn-large">开始同步</button>
+          <button id="btnCancelSync" class="btn btn-danger hidden">取消同步</button>
+        </div>
+        <div id="progressArea" class="progress-area hidden">
+          <div class="progress-bar">
+            <div id="progressFill" class="progress-fill"></div>
+          </div>
+          <p id="progressText" class="progress-text"></p>
+        </div>
+      </section>
+
+      <!-- 日志区域 -->
+      <section class="card log-card">
+        <h2>📋 同步日志</h2>
+        <div id="logArea" class="log-area">
+          <div class="log-entry info">应用已就绪，请配置同步目录并登录。</div>
+        </div>
+        <button id="btnClearLog" class="btn btn-text">清空日志</button>
+      </section>
+    </main>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

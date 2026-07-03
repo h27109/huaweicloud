@@ -1,20 +1,55 @@
 {
-  "name": "huaweicloud",
+  "name": "huaweicloud-sync",
   "version": "1.0.0",
-  "description": "华为云空间云盘同步备份工具",
-  "main": "1.js",
+  "description": "华为云空间云盘同步备份工具 (macOS App)",
+  "main": "main.js",
   "dependencies": {
     "async-mutex": "^0.3.2",
-    "better-sqlite3": "^7.5.0"
+    "better-sqlite3": "^12.11.1"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "electron": "^33.4.11",
+    "electron-builder": "^25.0.0",
+    "electron-rebuild": "^3.2.9"
+  },
   "scripts": {
+    "start": "electron .",
+    "build": "electron-builder",
+    "postinstall": "electron-rebuild -f -w better-sqlite3",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
-    "url": "git@cc:ccdarkness/huaweicloud.git"
+    "url": "https://github.com/h27109/huaweicloud.git"
   },
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "build": {
+    "appId": "com.h27109.huaweicloud-sync",
+    "productName": "Huawei Cloud Sync",
+    "mac": {
+      "category": "public.app-category.utilities",
+      "target": [
+        "dmg",
+        "zip"
+      ]
+    },
+    "files": [
+      "main.js",
+      "preload.js",
+      "src/**/*",
+      "renderer/**/*",
+      "node_modules/**/*",
+      "package.json"
+    ],
+    "extraResources": [
+      {
+        "from": "node_modules/better-sqlite3/build",
+        "to": "better-sqlite3-build",
+        "filter": [
+          "**/*"
+        ]
+      }
+    ]
+  }
 }
